@@ -11,10 +11,8 @@ def get_url(ano):
 
 			
 def get_data(url, ano):
-	html = urllib.urlopen(url).read()
-	soup = fromstring(html)
+	soup = parser(url)
 	data = {}
-
 	#dicionario
 	data["nome"] = ""
 	data["partido"] = ""
@@ -69,6 +67,10 @@ def get_data(url, ano):
 	#save
 	table.writerow(data, unique_columns=['id'])
 
+def parser(url):
+	html = urllib.urlopen(url).read()
+	return fromstring(html)
+
 #connect
 database = Database('webstore.thedatahub.org', 'danielabsilva', 'deputados_brazil', http_apikey=apikey)
 table = database['deputados_bio']
@@ -77,8 +79,7 @@ erros = database['erros']
 anos = range(41,54)
 for ano in anos:
 	url_busca = get_url(ano)
-	html_busca = urllib.urlopen(url_busca).read()
-	soup = fromstring(html_busca)
+	soup = parser(url_busca)
 	urls_deputados = soup.cssselect("#content a")
 	for url in urls_deputados:
 		try:
