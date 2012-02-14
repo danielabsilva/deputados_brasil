@@ -4,6 +4,7 @@ import urllib
 import BeautifulSoup
 from webstore.client import Database
 import json
+import scraper_deputados_api
 
 def get_url():
 	anos = range(41,54)
@@ -80,7 +81,7 @@ def get_data(url, ano):
 	table.writerow(data, unique_columns=['id'])
 
 #connect
-database = Database('webstore.thedatahub.org', 'danielabsilva', 'deputados_brazil', http_apikey='f2476977-c91e-49cb-a9c3-ab9ad7d34730')
+database = Database('webstore.thedatahub.org', 'danielabsilva', 'deputados_brazil', http_apikey=apikey)
 table = database['deputados_bio']
 erros = database['erros']
 
