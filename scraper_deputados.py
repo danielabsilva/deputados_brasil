@@ -6,20 +6,9 @@ from webstore.client import Database
 import json
 import scraper_deputados_api
 
-def get_url():
-	anos = range(41,54)
-	for ano in anos:
-		url_busca = "http://www.camara.gov.br/internet/deputado/DepNovos_Lista.asp?Legislatura=" + str(ano) + "&Partido=QQ&SX=QQ&Todos=None&UF=QQ&condic=QQ&forma=lista&nome=&ordem=nome&origem="
-		html_busca = urllib.urlopen(url_busca).read()
-		soup = fromstring(html_busca)
-		urls_deputados = soup.cssselect("#content a")
-		for url in urls_deputados:
-			try: 
-				print "baixando " + url.get("href")
-				get_data(url.get("href"), ano)
-			except:
-				print "erro em " + url.get("href")
-				erros.writerow({"url" : url.get("href")})
+def get_url(ano):
+	return "http://www.camara.gov.br/internet/deputado/DepNovos_Lista.asp?Legislatura=" + str(ano) + "&Partido=QQ&SX=QQ&Todos=None&UF=QQ&condic=QQ&forma=lista&nome=&ordem=nome&origem="
+
 			
 def get_data(url, ano):
 	html = urllib.urlopen(url).read()
@@ -85,8 +74,16 @@ database = Database('webstore.thedatahub.org', 'danielabsilva', 'deputados_brazi
 table = database['deputados_bio']
 erros = database['erros']
 
-get_url()
-
-
-
-
+anos = range(41,54)
+for ano in anos:
+	url_busca = get_url(ano)
+	html_busca = urllib.urlopen(url_busca).read()
+	soup = fromstring(html_busca)
+	urls_deputados = soup.cssselect("#content a")
+	for url in urls_deputados:
+		try:
+			print "baixando " + url.get("href")
+			get_data(url.get("href"), ano)
+		except:
+			print "erro em " + url.get("href")
+			erros.writerow({"url" : url.get("href")})
