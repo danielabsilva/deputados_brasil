@@ -13,8 +13,13 @@ def get_url():
 		soup = fromstring(html_busca)
 		urls_deputados = soup.cssselect("#content a")
 		for url in urls_deputados:
-			get_data(url.get("href"), ano)
-		
+			try: 
+				print "baixando " + url.get("href")
+				get_data(url.get("href"), ano)
+			except:
+				print "erro em " + url.get("href")
+				erros.writerow({"url" : url.get("href")})
+			
 def get_data(url, ano):
 	html = urllib.urlopen(url).read()
 	soup = fromstring(html)
@@ -71,25 +76,13 @@ def get_data(url, ano):
 		data["outros"].append(informacao)
 	data["outros"] = json.dumps(data["outros"])
 	
-	#prints
-	print data["legislatura"]	
-	print data["id"]
-	print data["nome"]
-	print data["partido"]
-	print data["estado"]
-	print data["nascimento"]
-	print data["naturalidade"]
-	print data["profissoes"]
-	print data["filiacao"]
-	print data["imagem"]
-	print data["outros"]
-	
 	#save
 	table.writerow(data, unique_columns=['id'])
 
 #connect
 database = Database('webstore.thedatahub.org', 'danielabsilva', 'deputados_brazil', http_apikey='f2476977-c91e-49cb-a9c3-ab9ad7d34730')
 table = database['deputados_bio']
+erros = database['erros']
 
 get_url()
 
